@@ -1,4 +1,4 @@
-use std::time::Instant;
+use std::{iter::Rev, str::Chars, time::Instant};
 
 fn main() {
     let input = std::fs::read_to_string("input.txt").unwrap();
@@ -18,106 +18,82 @@ fn main() {
     println!("Part 2: {} ({:?})", part_2_result, part_2_time);
 }
 
-fn solution_part_1(input: &str) -> i32 {
+fn solution_part_1(input: &str) -> usize {
     input
         .lines()
         .map(|line| {
-            let mut forwards = line.chars().into_iter();
-            let mut backwards = line.chars().rev().into_iter();
+            let first = line.chars().find(|c| c.is_numeric()).unwrap();
+            let last = line.chars().rev().find(|c| c.is_numeric()).unwrap();
 
-            let mut first: Option<char> = None;
-            let mut last: Option<char> = None;
-
-            loop {
-                if first.is_none() {
-                    if let Some(forward_next) = forwards.next() {
-                        if forward_next.is_numeric() {
-                            first = Some(forward_next);
-                        }
-                    }
-                }
-
-                if last.is_none() {
-                    if let Some(backwards_next) = backwards.next() {
-                        if backwards_next.is_numeric() {
-                            last = Some(backwards_next);
-                        }
-                    }
-                }
-
-                if first.is_some() && last.is_some() {
-                    break;
-                }
-            }
-
-            format!("{}{}", first.unwrap(), last.unwrap())
-                .parse::<i32>()
-                .unwrap()
+            format!("{}{}", first, last).parse::<usize>().unwrap()
         })
         .sum()
 }
 
+trait DigitsSearcher {
+    fn find_first_digit(self) -> Option<u32>;
+}
+
+impl<I> DigitsSearcher for I
+where
+    I: Iterator<Item = char>,
+{
+    fn find_first_digit(mut self) -> Option<u32> {
+        let mut buff = String::new();
+
+        self.find_map(|c| {
+            if c.is_numeric() {
+                Some(c.to_digit(10).unwrap())
+            } else {
+                buff.push(c);
+
+                if let Some(digit) = buff.find_spelled_out_digit() {
+                    Some(digit)
+                } else {
+                    None
+                }
+            }
+        })
+    }
+}
+
+trait IsDigitString {
+    fn find_spelled_out_digit(&self) -> Option<u32>;
+}
+
+impl IsDigitString for String {
+    fn find_spelled_out_digit(&self) -> Option<u32> {
+        if self.ends_with(&"one") || self.starts_with(&"eno") {
+            return Some(1);
+        } else if self.ends_with(&"two") || self.starts_with(&"owt") {
+            return Some(2);
+        } else if self.ends_with(&"three") || self.starts_with(&"eerht") {
+            return Some(3);
+        } else if self.ends_with(&"four") || self.starts_with(&"ruof") {
+            return Some(4);
+        } else if self.ends_with(&"five") || self.starts_with(&"evif") {
+            return Some(5);
+        } else if self.ends_with(&"six") || self.starts_with(&"xis") {
+            return Some(6);
+        } else if self.ends_with(&"seven") || self.starts_with(&"neves") {
+            return Some(7);
+        } else if self.ends_with(&"eight") || self.starts_with(&"thgie") {
+            return Some(8);
+        } else if self.ends_with(&"nine") || self.starts_with(&"enin") {
+            return Some(9);
+        } else {
+            return None;
+        }
+    }
+}
+
 fn solution_part_2(input: &str) -> i32 {
-    let dict = [
-        "one", "two", "three", "four", "five", "six", "seven", "eight", "nine",
-    ];
-
-    let inverse_dict = [
-        "eno", "owt", "eerht", "ruof", "evif", "xis", "neves", "thgie", "enin",
-    ];
-
     input
         .lines()
         .map(|line| {
-            let mut forwards = line.chars().into_iter();
-            let mut backwards = line.chars().rev().into_iter();
+            let first = line.chars().find_first_digit();
 
-            let mut buff_first = String::new();
-            let mut buff_last = String::new();
-
-            let mut first: Option<char> = None;
-            let mut last: Option<char> = None;
-
-            loop {
-                if first.is_none() {
-                    if let Some(forward_next) = forwards.next() {
-                        if forward_next.is_numeric() {
-                            first = Some(forward_next);
-                        } else {
-                            buff_first.push(forward_next);
-
-                            if buff_first.len() >= 3 {
-                                if let Some(num) = dict.iter().position(|x| buff_first.contains(x))
-                                {
-                                    first = Some(char::from_digit((num + 1) as u32, 10).unwrap());
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if last.is_none() {
-                    if let Some(backwards_next) = backwards.next() {
-                        if backwards_next.is_numeric() {
-                            last = Some(backwards_next);
-                        } else {
-                            buff_last.push(backwards_next);
-
-                            if buff_last.len() >= 3 {
-                                if let Some(num) =
-                                    inverse_dict.iter().position(|x| buff_last.contains(x))
-                                {
-                                    last = Some(char::from_digit((num + 1) as u32, 10).unwrap());
-                                }
-                            }
-                        }
-                    }
-                }
-
-                if first.is_some() && last.is_some() {
-                    break;
-                }
-            }
+            let last = line.chars().rev().find_first_digit();
 
             format!("{}{}", first.unwrap(), last.unwrap())
                 .parse::<i32>()

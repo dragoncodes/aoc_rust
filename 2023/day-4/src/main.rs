@@ -35,13 +35,11 @@ fn solution_part_1(input: &str) -> u32 {
                 .split_whitespace()
                 .map(|x| x.parse::<u32>().unwrap());
 
-            let card_matches: u32 = second_half.fold(0, |acc, x| {
-                if first_half.contains(&x) {
-                    acc + 1
-                } else {
-                    acc
-                }
-            });
+            let card_matches: u32 = second_half
+                .filter(|x| first_half.contains(x))
+                .count()
+                .try_into()
+                .unwrap();
 
             if card_matches > 0 {
                 u32::pow(2, card_matches - 1)

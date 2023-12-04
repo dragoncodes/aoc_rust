@@ -24,18 +24,18 @@ fn solution_part_1(input: &str) -> u32 {
         .map(|line| {
             let points_halves = line.split_once(':').unwrap().1.split_once('|').unwrap();
 
-            let first_half = &points_halves
+            let first_half = points_halves
                 .0
                 .split_whitespace()
                 .map(|x| x.parse::<u32>().unwrap())
                 .collect::<Vec<u32>>();
 
-            let second_half = &points_halves
+            let second_half = points_halves
                 .1
                 .split_whitespace()
                 .map(|x| x.parse::<u32>().unwrap());
 
-            let card_matches: u32 = second_half.clone().fold(0, |acc, x| {
+            let card_matches: u32 = second_half.fold(0, |acc, x| {
                 if first_half.contains(&x) {
                     acc + 1
                 } else {

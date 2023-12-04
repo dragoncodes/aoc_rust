@@ -63,18 +63,18 @@ fn solution_part_2(input: &str) -> u32 {
 
                 let points_half = card_and_rest.1.split_once('|').unwrap();
 
-                let first_half = &points_half
+                let first_half = points_half
                     .0
                     .split_whitespace()
                     .map(|x| x.parse::<u32>().unwrap())
                     .collect::<Vec<u32>>();
 
-                let second_half = &points_half
+                let second_half = points_half
                     .1
                     .split_whitespace()
                     .map(|x| x.parse::<u32>().unwrap());
 
-                second_half.clone().fold(1, |acc, x| {
+                second_half.fold(1, |acc, x| {
                     if first_half.contains(&x) {
                         cards_copies[idx + acc] += cards_copies[idx] + 1;
 

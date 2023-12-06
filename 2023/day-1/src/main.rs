@@ -1,4 +1,4 @@
-use std::{iter::Rev, str::Chars, time::Instant};
+use std::time::Instant;
 
 fn main() {
     let input = std::fs::read_to_string("input.txt").unwrap();

@@ -20,7 +20,7 @@ fn main() {
 }
 
 fn count_winning_combinations(time: usize, distance_to_beat: usize) -> usize {
-    (1..=time.clone())
+    (1..=time)
         .find_map(|idx| {
             let speed_left = idx;
 

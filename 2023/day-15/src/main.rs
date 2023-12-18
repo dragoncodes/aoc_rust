@@ -1,4 +1,5 @@
 use itertools::*;
+use rayon::prelude::*;
 use std::time::Instant;
 
 fn main() {
@@ -27,11 +28,7 @@ fn christmas_hash(s: &str) -> u32 {
 }
 
 fn solution_part_1(input: &str) -> usize {
-    input
-        .split(',')
-        .map(|s| s.trim())
-        .map(christmas_hash)
-        .sum::<u32>() as usize
+    input.split(',').map(christmas_hash).sum::<u32>() as usize
 }
 
 #[derive(Debug)]
@@ -164,5 +161,12 @@ mod tests {
         let input = r#"rn=1,cm-,qp=3,cm=2,qp-,pc=4,ot=9,ab=5,pc-,pc=6,ot=7"#.trim();
 
         assert_eq!(solution_part_2(input), 145);
+    }
+
+    #[test]
+    fn part2_real() {
+        let input = std::fs::read_to_string("input.txt").unwrap();
+
+        assert_eq!(solution_part_2(&input), 279470);
     }
 }

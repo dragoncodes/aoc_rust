@@ -1,5 +1,4 @@
 use itertools::*;
-use rayon::prelude::*;
 use std::time::Instant;
 
 fn main() {
